@@ -1,0 +1,17 @@
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=chatbot_user
+DB_PASSWORD=chatbot_password
+DB_DATABASE=chatbot_db
+
+# Application Configuration
+PORT=3000
+NODE_ENV=development
+
+# Security
+JWT_SECRET=your-jwt-secret-key
+API_SECRET=your-api-secret-for-n8n
+
+# N8N Configuration
+N8N_WEBHOOK_URL=http://localhost:5678/webhook 
