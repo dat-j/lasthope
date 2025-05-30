@@ -4,8 +4,24 @@ export declare class MessageRequestDto {
     flowId?: number;
     platform?: string;
 }
+export declare class ButtonDto {
+    type: string;
+    title: string;
+    payload: string;
+}
+export declare class AttachmentTemplateDto {
+    template_type: string;
+    text: string;
+    buttons: ButtonDto[];
+}
+export declare class AttachmentDto {
+    type: string;
+    payload?: AttachmentTemplateDto;
+}
 export declare class MessageResponseDto {
-    replyText: string;
+    text?: string;
+    attachment?: AttachmentDto;
+    replyText?: string;
     quickReplies?: string[];
     attachments?: Array<{
         type: 'image' | 'file' | 'video';

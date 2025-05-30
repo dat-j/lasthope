@@ -46,7 +46,7 @@ let MessageService = class MessageService {
             await this.conversationService.addToHistory(userId, targetFlowId, currentNode.id, text, 'Cảm ơn bạn đã sử dụng dịch vụ!');
             await this.conversationService.resetConversation(userId, targetFlowId);
             return {
-                replyText: 'Cảm ơn bạn đã sử dụng dịch vụ! Gửi tin nhắn bất kỳ để bắt đầu lại.',
+                text: 'Cảm ơn bạn đã sử dụng dịch vụ! Gửi tin nhắn bất kỳ để bắt đầu lại.',
                 metadata: {
                     isEndOfFlow: true,
                     nodeId: currentNode.id,
@@ -58,25 +58,39 @@ let MessageService = class MessageService {
         return this.buildResponse(nextNode);
     }
     buildResponse(node) {
-        const response = {
-            replyText: node.text || node.content || 'Xin lỗi, tôi không hiểu.',
-            metadata: {
-                nodeId: node.id,
-                isEndOfFlow: false,
-            },
-        };
-        if (node.options && node.options.length > 0) {
-            response.quickReplies = node.options.map(option => option.label);
+        const responseText = node.text || node.content || 'Xin lỗi, tôi không hiểu.';
+        const hasButtons = node.options && node.options.length > 0;
+        if (hasButtons) {
+            const response = {
+                attachment: {
+                    type: "template",
+                    payload: {
+                        template_type: "button",
+                        text: responseText,
+                        buttons: node.options.map(option => ({
+                            type: "postback",
+                            title: option.label,
+                            payload: option.label
+                        }))
+                    }
+                },
+                metadata: {
+                    nodeId: node.id,
+                    isEndOfFlow: false,
+                },
+            };
+            return response;
         }
-        switch (node.type) {
-            case 'api':
-                response.metadata.nextActions = ['api_call'];
-                break;
-            case 'condition':
-                response.metadata.nextActions = ['evaluate_condition'];
-                break;
+        else {
+            const response = {
+                text: responseText,
+                metadata: {
+                    nodeId: node.id,
+                    isEndOfFlow: false,
+                },
+            };
+            return response;
         }
-        return response;
     }
     async resetUserConversation(userId, flowId) {
         if (flowId) {
